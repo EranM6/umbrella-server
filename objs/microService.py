@@ -4,12 +4,25 @@ from objs.values import Values
 class MicroService(Values):
     """This class is for Micro-services values file"""
 
+    tls = True
+    domains = ['haaretz.co.il', 'themarker.com', 'haaretz.com']
+
     def __init__(self, service_name, namespace):
         super().__init__(service_name, namespace)
-        self.tls = True
-        self.ingress = self.populate_ingress(['haaretz.co.il', 'themarker.com'],
-                                             'prod' if namespace == 'ms-app' else 'dev')
+        self.ingress = self.populate_ingress(
+            "k8s-{}".format('prod' if namespace == 'prod' else 'stage')
+        )
 
-    def populate_envs(self):
-        self.env.extend([{'name': 'aaaa', 'value': 'bbb'}, {'name': 'ppp', 'value': 'kkkk'}])
-        return self.env
+        # Initialize dictionaries
+        self.env = {}
+        self.autoscale = {}
+        self.resources = {}
+
+    def set_envs(self):
+        return
+
+    def set_resources(self):
+        return
+
+    def set_autoscale(self):
+        return

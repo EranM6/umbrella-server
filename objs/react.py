@@ -10,6 +10,12 @@ class React(Values):
         self.ingress = self.populate_ingress(['haaretz.co.il', 'themarker.com'],
                                              'prod' if namespace == 'ms-app' else 'dev')
 
-    def populate_envs(self):
+    def set_envs(self):
         self.env.extend([{'name': 'dddd', 'value': 'bbb'}])
         return self.env
+
+    def set_resources(self):
+        return
+
+    def set_autoscale(self):
+        return

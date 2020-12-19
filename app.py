@@ -1,27 +1,25 @@
 import yaml
-from flask import Flask, request
-
-from objs.microService import MicroService
-from objs.react import React
+from flask import Flask, request, send_from_directory, abort
+from utils import generate_file
 
 app = Flask(__name__)
 
 
-@app.route('/config/service', methods=['GET'])
-def generate_config():
-    if all([request.args.get(key) for key in ['type', 'name', 'namespace']]):
-        app_type = request.args.get('type')
-        app_name = request.args.get('name')
-        namespace = request.args.get('namespace')
+@app.route('/config', methods=['GET'])
+def main():
+    if not all([request.args.get(key) for key in ['name', 'namespace']]):
+        abort(400, "Error: Please provide all of the required arguments ('name', 'namespace')")
 
-        Model = React if app_type == 'react' else MicroService
+    app_name = request.args.get('name')
+    namespace = request.args.get('namespace')
+    file_name = 'values-temp.yaml'
 
-        q = Model(app_name, namespace)
-        f = open('values.yaml', 'w+')
-        yaml.dump(q.generate_file(), f, allow_unicode=True)
-        return yaml.dump(q.generate_file())
-    else:
-        return "Error: Please provide all of the required arguments ('type', 'name', 'namespace')"
+    error = generate_file(app_name, namespace, file_name)
+
+    if error:
+        abort(400, error)
+
+    return send_from_directory("./", file_name, as_attachment=True)
 
 
 if __name__ == '__main__':
